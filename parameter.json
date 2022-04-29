@@ -1,0 +1,126 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "Vnet_Name": {
+            "value": "VNet"
+        },
+        "Vnet_AddressSpace": {
+            "value": "10.1.0.0/16"
+        },
+        "Vnet_Tags": {
+            "value": {
+                "Environment": "dev",
+                "Owner"      : "Jake"
+            }
+        },
+        "Subnet_Name": {
+            "value": "default" 
+        },  
+        "Subnet_Address_Space": {
+            "value": "10.1.0.0/24" 
+        },
+        "NSG_Name":{
+            "value": "New_NSG"
+        },
+        "NSG_Tags": {
+            "value":
+            {
+                "Environment": "dev",
+                "Owner"      : "Jake"
+            } 
+        },
+        "NSG_RuleName" :{
+            "value":"RDP-Rule"
+        },
+        "NSG_RuleProtocol":{
+            "value":"*"
+        },
+        "NSG_SourcePortRange": {
+            "value": "*"
+        },
+        "NSG_DestinationPortRange": {
+            "value": "*"
+        },
+        "NSG_SourceAddressPrefix": {
+            "value": "*"
+        },
+        "NSG_DestinationAddressPrefix": {
+            "value": "*"
+        },
+        "NSG_Access": {
+            "value": "Allow"
+        },
+        "NSG_Priority": {
+            "value": "100"
+        },
+        "NSG_Direction": {
+            "value": "Inbound"
+        },
+        "Public_IP_Name": {
+            "value": "PublicIP" 
+        },
+        "Public_IP_AllocationMethod":{
+            "value": "Dynamic"
+         },
+         "Private_IP_AllocationMethod":{
+            "value": "Dynamic"
+         },
+         
+        "Public_IP_Tags": {
+            "value": 
+            {
+                "Environment": "dev",
+                "Owner"      : "Jake"
+            }
+        },
+        "NIC_Name": {
+            "value": "New_NIC"
+        },
+        "NIC_IP_Name": {
+            "value": "ipconfig1"
+        },
+        "NIC_Tags": {
+            "value": 
+            {
+                "Environment": "dev",
+                "Owner"      : "Jake"
+            }
+        },
+        "VM_Tags": {
+            "value": 
+            {
+                "Environment": "dev",
+                "Owner"      : "Jake"
+            }
+        },
+        "VM_Publisher": {
+            "value": "Canonical"
+        },
+        "VM_Offer": 
+        {
+            "value": "UbuntuServer"
+        },
+        "VM_Version": {
+            "value": "latest"
+        },
+        "VM_Name": {
+            "value": "FirstVM" 
+        },
+        "VM_UserName": {
+            "value": "mananmanik" 
+        },
+        "VM_Password": {
+            "value": "Qwerty@12345" 
+        },
+        "VM_Size": {
+            "value": "Standard_B1s" 
+        },
+        "VM_CreateOption": {
+            "value": "FromImage"
+        },
+        "VM_SKU": {
+            "value": "16.04-LTS"
+        }
+    }
+}

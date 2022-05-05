@@ -1,0 +1,67 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "Vnet_Name": {
+            "value": "VNet"
+        },
+        "Subnet_Name": {
+            "value": ["Subnet1","Subnet2"] 
+        },  
+         "Private_IP_AllocationMethod":{
+            "value": ["Dynamic","Dynamic"]
+         },
+        "NIC_Name": {
+            "value": ["New_NIC","New_NIC2"]
+        },
+        "NIC_IP_Name": {
+            "value": ["ipconfig1","ipconfig2"]
+        },
+        "NIC_Tags": {
+            "value": 
+            {
+                "Environment": "Dev",
+                "Owner"      : "Jake"  
+            }
+        },
+        "VM_Tags": {
+            "value": 
+            {
+                "Environment": "Dev",
+                "Owner"      : "Jake"
+            }
+        },
+        "VM_Publisher": {
+            "value": ["Canonical","Canonical"]
+        },
+        "VM_Offer": 
+        {
+            "value": ["UbuntuServer","UbuntuServer"]
+        },
+        "VM_Version": {
+            "value": ["latest","latest"]
+        },
+        "VM_Name": {
+            "value": ["FirstVM","FirstVM2"] 
+        },
+        "VM_Computername": {
+            "value": ["MyPC","MyPC"] 
+        },
+        "VM_UserName": {
+            "value": ["mananmanik","mananmanik"]
+        },
+        "VM_Password": {
+            "value": ["Qwerty@12345","Qwerty@12345"] 
+        },
+        "VM_Size": {
+            "value": ["Standard_B1s","Standard_B1s"] 
+        },
+        "VM_CreateOption": {
+            "value": ["FromImage","FromImage"]
+        },
+        "VM_SKU": {
+            "value": ["16.04-LTS","16.04-LTS"]
+        }        
+    }
+
+}

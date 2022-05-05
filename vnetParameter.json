@@ -1,0 +1,24 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "Vnet_Name": {
+            "value": "VNet"
+        },
+        "Vnet_AddressSpace": {
+            "value": "10.0.0.0/16"
+        },
+        "Vnet_Tags": {
+            "value": {
+                "Environment": "Dev",
+                "Owner"      : "Jake"
+            }
+        },
+        "Subnet_Name": {
+            "value": ["Subnet1","Subnet2"] 
+        },  
+        "Subnet_Address_Space": {
+            "value": ["10.0.0.0/24","10.0.1.0/24"] 
+        }
+    }
+}

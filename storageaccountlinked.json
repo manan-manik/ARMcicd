@@ -1,0 +1,35 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "Storage_Name": {
+            "type": "Array"
+        },
+        "Storage_SKU_Name": {
+            "type": "Array"
+        },
+        "Location": {
+            "type": "Array"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type"      : "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2021-08-01",
+            "copy"       : 
+            {
+             "name"      : "Storage",
+             "count"     : "[length(parameters('Storage_Name'))]",
+             "mode"      : "Serial"
+            },
+            "name"      : "[parameters('Storage_Name')[copyIndex('Storage')]]",
+            "location"  : "[parameters('Location')[copyIndex('Storage')]]",
+            "kind"      : "StorageV2",
+            "sku": 
+            {
+                "name": "[parameters('Storage_SKU_Name')[copyIndex('Storage')]]"
+            }
+        }
+    ]
+}

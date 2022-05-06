@@ -1,0 +1,42 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "LogicApp_Name": {
+        "type": "array"
+      },
+      "location": {
+        "type": "array",
+        "defaultValue": "[resourceGroup().location]"
+      }
+    },
+    "functions": [],
+    "variables": {},
+    "resources": [
+      {
+        "type"      : "Microsoft.Logic/workflows",
+        "apiVersion": "2019-05-01",
+        "copy"       : 
+        {
+         "name"      : "Logic",
+         "count"     : "[length(parameters('LogicApp_Name'))]",
+         "mode"      : "Serial"
+        },
+        "name"      : "[parameters('LogicApp_Name')[copyIndex('Logic')]]",
+        "location"  : "[parameters('location')[copyIndex('Logic')]]",
+        "tags"      : {},
+        "properties": 
+        {
+          "definition": 
+          {
+            "$schema"        : "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+            "contentVersion" : "1.0.0.0",
+            "parameters"     : {},
+            "triggers"       : {},
+            "actions"        : {},
+            "outputs"        : {}
+          }
+        }
+      }
+    ]
+  }

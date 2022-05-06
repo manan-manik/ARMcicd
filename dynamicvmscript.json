@@ -1,0 +1,304 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "Vnet_Name": {
+            "type": "String"
+        },
+        "Vnet_AddressSpace":{
+            "type": "string"
+        },
+        "Vnet_Tags": {
+            "type": "Object"
+        },
+        "Subnet_Name":{
+            "type": "Array"
+        },
+        "Subnet_Address_Space":{
+            "type": "Array"
+        },
+        "NSG_Name":{
+            "type": "Array"
+
+        },
+        "NSG_Tags": {
+            "type": "object"
+        },
+        "NSG_RuleName": {
+            "type": "Array"
+        },
+        "NSG_RuleProtocol": {
+            "type": "Array"
+        },
+        "NSG_SourcePortRange": {
+            "type": "Array"
+        },
+        "NSG_DestinationPortRange": {
+            "type": "Array"
+        },
+        "NSG_SourceAddressPrefix": {
+            "type": "Array"
+        },
+        "NSG_DestinationAddressPrefix": {
+            "type": "Array"
+        },
+        "NSG_Access": {
+            "type": "Array"
+        },
+        "NSG_Priority": {
+            "type": "Array"
+        },
+        "NSG_Direction": {
+            "type": "Array"
+        },
+        "Public_IP_Name": {
+            "type": "Array"
+        },
+         "Public_IP_AllocationMethod":{
+            "type": "Array"
+         },
+        "Private_IP_AllocationMethod":{
+            "type": "Array"
+         },
+        "Public_IP_Tags": {
+            "type": "object"
+        },
+        "NIC_Name": {
+            "type": "Array"
+        },
+        "NIC_IP_Name": {
+            "type": "Array"
+        },
+        "NIC_Tags": {
+            "type": "object"
+        },
+        "VM_Tags": {
+            "type": "object"
+        },
+        "VM_Publisher": {
+            "type": "Array"
+        },
+        "VM_Offer": 
+        {
+            "type": "Array"
+        },
+        "VM_Version": {
+            "type": "Array"
+        },
+        "VM_Name": {
+            "type": "Array"
+        },
+        "VM_Computername": {
+            "type": "Array"
+        },
+        "VM_Size": {
+            "type": "Array"
+        },
+        "VM_UserName": {
+            "type": "array"
+        },
+        "VM_Password": {
+            "type": "array"
+        },
+        "VM_CreateOption": {
+            "type": "array"
+        },
+        "VM_SKU":
+        {
+            "type": "array"
+        }
+
+    },
+    "variables": {},
+    "resources": 
+    [
+        {
+            "type"      : "Microsoft.Network/virtualNetworks",
+            "apiVersion": "2020-11-01",
+            "name"      : "[parameters('Vnet_Name')]",
+            "location"  : "[resourceGroup().location]",
+            "tags"      : "[parameters('Vnet_tags')]",
+            "properties":
+            {
+                "addressSpace": 
+                {
+                    "addressPrefixes": ["[parameters('Vnet_AddressSpace')]"]
+                }
+                  
+            }
+        },
+	    {
+            "type"      : "Microsoft.Network/virtualNetworks/subnets",
+            "apiVersion": "2020-11-01",
+            "copy"      : 
+            {
+             "name"     : "Subnets",
+             "count"    : "[length(parameters('Subnet_Name'))]",
+             "mode"     : "Serial"
+            },
+            "name"      : "[concat(parameters('VNet_Name'),'/',parameters('Subnet_Name')[copyIndex('Subnets')])]",
+            "dependsOn" :
+            [
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('VNet_Name'))]"
+            ],
+            "properties":
+            {
+                "addressPrefix"      : "[parameters('Subnet_Address_Space')[copyIndex('Subnets')]]",
+                "networkSecurityGroup":
+                {
+                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups',parameters('NSG_Name')[copyIndex('Subnets')])]"
+                }
+            }
+        },
+        {
+            "apiVersion": "2020-11-01",
+            "type"      : "Microsoft.Network/networkSecurityGroups",
+            "copy"      : 
+            {
+             "name"     : "NSG",
+             "count"    : "[length(parameters('NSG_Name'))]",
+             "mode"     : "Serial"
+            },
+            "name"      : "[parameters('NSG_Name')[copyIndex('NSG')]]",
+            "location"  : "[resourceGroup().location]",
+            "tags"      : "[parameters('NSG_Tags')]",
+            "properties":
+            {
+                "securityRules":
+                 [
+                    {
+                        "name"      : "[parameters('NSG_RuleName')[copyIndex('NSG')]]",
+                        "properties":
+                        {
+                            "protocol"                  : "[parameters('NSG_RuleProtocol')[copyIndex('NSG')]]",
+                            "sourcePortRange"           : "[parameters('NSG_SourcePortRange')[copyIndex('NSG')]]",
+                            "destinationPortRange"      : "[parameters('NSG_DestinationPortRange')[copyIndex('NSG')]]",
+                            "sourceAddressPrefix"       : "[parameters('NSG_SourceAddressPrefix')[copyIndex('NSG')]]",
+                            "destinationAddressPrefix"  : "[parameters('NSG_DestinationAddressPrefix')[copyIndex('NSG')]]",
+                            "access"                    : "[parameters('NSG_Access')[copyIndex('NSG')]]",
+                            "priority"                  : "[parameters('NSG_Priority')[copyIndex('NSG')]]",
+                            "direction"                 : "[parameters('NSG_Direction')[copyIndex('NSG')]]"
+                        }
+                    }
+                ]               
+            }
+        },
+        {
+            "apiVersion"    : "2020-11-01",
+            "type"          : "Microsoft.Network/publicIPAddresses",
+            "copy"          : 
+            {
+             "name"         : "PIP",
+             "count"        : "[length(parameters('Public_IP_Name'))]",
+             "mode"         : "Serial"
+            },
+            "name"          : "[parameters('Public_IP_Name')[copyIndex('PIP')]]",
+            "location"      : "[resourceGroup().location]",
+            "properties"    : 
+            {
+            "publicIPAllocationMethod": "[parameters('Public_IP_AllocationMethod')[copyIndex('PIP')]]"
+            },
+            "tags"          : "[parameters('Public_IP_Tags')]"
+        },
+        {
+            "apiVersion"    : "2021-03-01",
+            "type"          : "Microsoft.Network/networkInterfaces",
+            "copy"          : 
+            {
+             "name"         : "NIC",
+             "count"        : "[length(parameters('NIC_Name'))]",
+             "mode"         : "Serial"
+            },
+            "name"          : "[parameters('NIC_Name')[copyIndex('NIC')]]",
+            "location"      : "[resourceGroup().location]",
+            "tags"          : "[parameters('NIC_Tags')]",
+
+            "dependsOn"         : 
+            [
+             "[resourceId('Microsoft.Network/publicIPAddresses/', parameters('Public_IP_Name')[copyIndex('NIC')])]",
+             "[resourceId('Microsoft.Network/virtualNetworks/subnets',parameters('Vnet_Name'), parameters('Subnet_Name')[copyIndex('NIC')])]"
+            ],
+            "properties"        : 
+            {
+             "ipConfigurations":
+                [
+                    {
+                     "name"      : "[parameters('NIC_IP_Name')[copyIndex('NIC')]]",
+                     "properties":
+                     {
+                       "privateIPAllocationMethod" : "[parameters('Private_IP_AllocationMethod')[copyIndex('NIC')]]",
+                       "publicIPAddress"           :
+                        {
+                            "id" : "[resourceId('Microsoft.Network/publicIPAddresses',parameters('Public_IP_Name')[copyIndex('NIC')])]"
+                        },
+                        "subnet" : 
+                        {
+                          "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets',parameters('Vnet_Name'),parameters('Subnet_Name')[copyIndex('NIC')])]"
+                        }
+                     }
+                    }
+                ]
+            }
+        },
+        {
+           "type"        : "Microsoft.Compute/virtualMachines",
+            "apiVersion" : "2021-07-01",
+            "copy"       : 
+            {
+             "name"      : "VM",
+             "count"     : "[length(parameters('VM_Name'))]",
+             "mode"      : "Serial"
+            },
+            "name"       : "[parameters('VM_Name')[copyIndex('VM')]]",
+            "location"   : "[resourceGroup().location]",
+            "tags"       : "[parameters('VM_Tags')]",
+            "dependsOn"  :
+            [
+              "[resourceId('Microsoft.Network/networkInterfaces', parameters('NIC_Name')[copyIndex('VM')])]"
+            ],
+            "properties" : 
+            {
+             "hardwareProfile":
+               {
+                "vmSize" : "[parameters('VM_Size')[copyIndex('VM')]]"
+               },
+             "osProfile"      :
+              {
+                 "computerName"  : "[parameters('VM_Computername')[copyIndex('VM')]]",
+                 "adminUsername" : "[parameters('VM_UserName')[copyIndex('VM')]]",
+                 "adminPassword" : "[parameters('VM_Password')[copyIndex('VM')]]"
+              },
+             "storageProfile":
+              {
+                "imageReference":
+                 {
+                   "publisher" : "[parameters('VM_Publisher')[copyIndex('VM')]]",
+                   "offer"     : "[parameters('VM_Offer')[copyIndex('VM')]]",
+                   "sku"       : "[parameters('VM_SKU')[copyIndex('VM')]]",
+                   "version"   : "[parameters('VM_Version')[copyIndex('VM')]]"
+                 },
+               "osDisk":
+                 {
+                   "createOption"  : "[parameters('VM_CreateOption')[copyIndex('VM')]]"
+                 }
+              },
+             "networkProfile":
+              {
+                "networkInterfaces":
+                 [
+                  {
+                   "id": "[resourceId('Microsoft.Network/networkInterfaces', parameters('NIC_Name')[copyIndex('VM')])]"
+                  }
+                 ] 
+              }
+                    
+            }
+            
+
+        }
+        
+        
+    ]
+            
+    
+}

@@ -1,0 +1,35 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "VNet_Name": {
+            "type": "array"
+        },
+        "Subnet_Name": {
+            "type": "array"
+        },
+        "Subnet_Address_Space": {
+            "type": "array"
+        }
+        
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type"      : "Microsoft.Network/virtualNetworks/subnets",
+            "apiVersion": "2020-11-01",
+            "copy"      : 
+            {
+             "name"     : "Subnets",
+             "count"    : "[length(parameters('Subnet_Name'))]",
+             "mode"     : "Serial"
+            },
+            "name"      : "[concat(parameters('VNet_Name'),'/',parameters('Subnet_Name')[copyIndex('Subnets')])]",
+            "properties":
+            {
+                "addressPrefix"      : "[parameters('Subnet_Address_Space')[copyIndex('Subnets')]]"
+            }
+        }
+    ],
+    "outputs": {}
+}

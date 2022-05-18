@@ -23,7 +23,7 @@
             "name"      : "[concat(parameters('VNet_Name'),'/',parameters('Subnets')[copyIndex('Subnets')].subnetName)]",
             "properties":
             {
-                "addressPrefix"      : "[parameters('Subnets')[copyIndex('Subnets').subnetAddressPrefix]]"
+                "addressPrefix"      : "[parameters('Subnets')[copyIndex('Subnets')].subnetAddressPrefix]"
             }
         }
     ],

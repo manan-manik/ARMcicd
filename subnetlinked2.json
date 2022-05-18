@@ -3,10 +3,69 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "VNet_Name": {
-            "type": "String"
+            "type": "String",
+            "defaultValue": "Vnet1"
         },
         "Subnets": {
-            "type": "array"
+            "type": "array",
+            "defaultValue": [
+                {
+                            "subnetName"         : "Subnet1",
+                            "subnetAddressPrefix": "10.0.0.0/24",
+                            "virtualmachine"     : [
+                                {
+                                    "nicTags": {
+                                        "Environment": "Dev",
+                                        "Owner"      : "Jake"
+                                    },
+                                    "privateIPallocation" : "Dynamic",
+                                    "vmName"         : "VM01",
+                                    "vmTags": {
+                                        "Environment": "Dev",
+                                        "Owner"      : "Jake"
+                                    },
+                                    "vmComputerName" : "VM01",
+                                    "vmlocation"     : "eastus",
+                                    "vmusername"     : "mananmanik",
+                                    "vmPassword"     : "Qwerty@12345",
+                                    "vmSize"         : "Standard_B1s",
+                                    "vmPublisher"    : "Canonical",
+                                    "vmOffer"        : "UbuntuServer",
+                                    "vmSku"          : "16.04-LTS",
+                                    "vmVersion"      : "latest",
+                                    "vmCreateOption" : "FromImage"  
+                                }
+                            ]
+                        },
+                        {
+                            "subnetName"         : "Subnet2",
+                            "subnetAddressPrefix": "10.0.1.0/24",
+                            "virtualmachine"     : [
+                                {
+                                    "nicTags": {
+                                        "Environment": "Dev",
+                                        "Owner"      : "Jake"
+                                    },
+                                    "privateIPallocation" : "Dynamic",
+                                    "vmName"         : "VM02",
+                                    "vmTags": {
+                                        "Environment": "Dev",
+                                        "Owner"      : "Jake"
+                                    },
+                                    "vmComputerName" : "VM02",
+                                    "vmlocation"     : "eastus",
+                                    "vmusername"     : "mananmanik",
+                                    "vmPassword"     : "Qwerty@12345",
+                                    "vmSize"         : "Standard_B1s",
+                                    "vmPublisher"    : "Canonical",
+                                    "vmOffer"        : "UbuntuServer",
+                                    "vmSku"          : "16.04-LTS",
+                                    "vmVersion"      : "latest",
+                                    "vmCreateOption" : "FromImage"  
+                                }
+                            ]
+                        }
+            ]
         }
     },
     "variables": {},
@@ -24,6 +83,41 @@
             "properties":
             {
                 "addressPrefix"      : "[parameters('Subnets')[copyIndex('Subnets')].subnetAddressPrefix]"
+            }
+        },
+        {
+            "type"      : "Microsoft.Resources/deployments",
+            "apiVersion": "2021-04-01",
+            "copy"       : 
+            {
+                "name"      : "VM",
+                "count"     : "[length(parameters('Subnets'))]",
+                "mode"      : "Serial"
+            },
+            "name"      : "[parameters('Subnets')[copyIndex('VM')].subnetName]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('VNet_Name'), parameters('Subnets')[copyIndex('VM')].subnetName)]"
+            ],
+            "properties": 
+            {
+                "mode"  : "Incremental",
+                "parameters": 
+                {
+                    "subnetName": {
+                        "value": "[parameters('Subnets')[copyIndex('VM')].subnetName]"
+                    },
+                    "vnetName": {
+                        "value": "[parameters('VNet_Name')]"
+                    },
+                    "virtualmachine": {
+                        "value": "[parameters('Subnets')[copyIndex('VM')].virtualmachine]"
+                    }
+                },
+                "templateLink": 
+                {
+                    "uri": "https://raw.githubusercontent.com/manan-manik/ARMcicd/main/vmTemplate2.json",
+                    "contentVersion": "1.0.0.0"
+                }
             }
         }
     ],

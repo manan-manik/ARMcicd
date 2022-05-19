@@ -1,0 +1,131 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "vnetName": {
+            "type": "string",
+            "defaultValue": "Vnet1"
+        },
+        "subnetName": {
+            "type": "string",
+            "defaultValue": "Subnet1"
+        },
+        "virtualmachine": {
+            "type": "array",
+            "defaultValue": [
+                {
+                   "nicTags": {
+                        "Environment": "Dev",
+                        "Owner"      : "Jake"
+                    },
+                    "privateIPallocation" : "Dynamic",
+                    "vmName"         : "VM01",
+                    "vmCondition" : true,
+                    "vmTags": {
+                        "Environment": "Dev",
+                        "Owner"      : "Jake"
+                    },
+                    "vmComputerName" : "VM01",
+                    "vmlocation"     : "eastus",
+                    "vmusername"     : "mananmanik",
+                    "vmPassword"     : "Qwerty@12345",
+                    "vmSize"         : "Standard_B1s",
+                    "vmPublisher"    : "Canonical",
+                    "vmOffer"        : "UbuntuServer",
+                    "vmSku"          : "16.04-LTS",
+                    "vmVersion"      : "latest",
+                    "vmCreateOption" : "FromImage"  
+                }
+            ]
+        }
+    },
+    "variables": {},
+    "resources": 
+    [
+        {
+            "apiVersion"    : "2021-03-01",
+            "type"          : "Microsoft.Network/networkInterfaces",
+            "copy"          : 
+            {
+                "name"         : "NIC",
+                "count"        : "[length(parameters('virtualmachine'))]",
+                "mode"         : "Serial"
+            },
+            "condition" : "[parameters('virtualmachine')[copyIndex('NIC')].vmCondition]",
+            "name"          : "[concat(parameters('virtualmachine')[copyIndex('NIC')].vmName,'-nic')]",
+            "location"      : "[parameters('virtualmachine')[copyIndex('NIC')].vmlocation]",
+            "tags"          : "[parameters('virtualmachine')[copyIndex('NIC')].nicTags]",
+            "properties"        : 
+            {
+             "ipConfigurations":
+            [
+                {
+                    "name"      : "[toLower(concat(parameters('virtualmachine')[copyIndex('NIC')].vmName,'-ipconf'))]",
+                    "properties":
+                    {
+                        "privateIPAllocationMethod" : "[parameters('virtualmachine')[copyIndex('NIC')].privateIPallocation]",
+                        "subnet" : 
+                        {
+                            "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets',parameters('vnetName'),parameters('subnetName'))]"
+                        }
+                    }
+                }
+            ]
+            }
+        },
+        {
+           "type"        : "Microsoft.Compute/virtualMachines",
+            "apiVersion" : "2021-07-01",
+            "copy"       : 
+            {
+                "name"      : "VM",
+                "count"     : "[length(parameters('virtualmachine'))]",
+                "mode"      : "Serial"
+            },
+            "condition" : "[parameters('virtualmachine')[copyIndex('VM')].vmCondition]",
+            "name"       : "[parameters('virtualmachine')[copyIndex('VM')].vmName]",
+            "location"   : "[parameters('virtualmachine')[copyIndex('VM')].vmlocation]",
+            "tags"       : "[parameters('virtualmachine')[copyIndex('VM')].vmTags]",
+            "dependsOn"  :
+            [
+                "[resourceId('Microsoft.Network/networkInterfaces', concat(parameters('virtualmachine')[copyIndex('VM')].vmName,'-nic'))]"
+            ],
+            "properties" : 
+            {
+                "hardwareProfile":
+                {
+                    "vmSize" : "[parameters('virtualmachine')[copyIndex('VM')].vmSize]"
+                },
+                "osProfile"      :
+                {
+                    "computerName"  : "[parameters('virtualmachine')[copyIndex('VM')].vmComputerName]",
+                    "adminUsername" : "[parameters('virtualmachine')[copyIndex('VM')].vmusername]",
+                    "adminPassword" : "[parameters('virtualmachine')[copyIndex('VM')].vmPassword]"
+                },
+                "storageProfile":
+                {
+                    "imageReference":
+                    {
+                        "publisher" : "[parameters('virtualmachine')[copyIndex('VM')].vmPublisher]",
+                        "offer"     : "[parameters('virtualmachine')[copyIndex('VM')].vmOffer]",
+                        "sku"       : "[parameters('virtualmachine')[copyIndex('VM')].vmSku]",
+                        "version"   : "[parameters('virtualmachine')[copyIndex('VM')].vmVersion]"
+                    },
+                    "osDisk":
+                    {
+                        "createOption"  : "[parameters('virtualmachine')[copyIndex('VM')].vmCreateOption]"
+                    }
+                },
+                "networkProfile":
+                {
+                    "networkInterfaces":
+                    [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(parameters('virtualmachine')[copyIndex('VM')].vmName,'-nic'))]"
+                        }
+                    ] 
+                }     
+            } 
+        }    
+    ]
+}

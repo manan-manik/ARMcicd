@@ -1,0 +1,56 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "VNet_Name": {
+            "type": "String",
+            "defaultValue": "Vnet1"
+        },
+        "NSG_Name": {
+            "type": "String",
+            "defaultValue": "newNSG"
+        },
+        "Subnets": {
+            "type": "array",
+            "defaultValue": [
+                {
+                    "subnetName"         : "Subnet1",
+                    "subnetCondition"    : true,
+                    "subnetAddressPrefix": "10.0.0.0/24"
+                }
+            ]
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type"      : "Microsoft.Network/virtualNetworks/subnets",
+            "apiVersion": "2020-11-01",
+            "copy"      : 
+            {
+             "name"     : "Subnets",
+             "count"    : "[length(parameters('Subnets'))]",
+             "mode"     : "Serial"
+            },
+            "condition" : "[parameters('Subnets')[copyIndex('Subnets')].subnetCondition]",
+            "name"      : "[concat(parameters('VNet_Name'),'/',parameters('Subnets')[copyIndex('Subnets')].subnetName)]",
+            "properties":
+            {
+                "addressPrefix"      : "[parameters('Subnets')[copyIndex('Subnets')].subnetAddressPrefix]",
+                "networkSecurityGroup": 
+                {
+                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('NSG_Name'))]"
+                },
+              "delegations": [
+                {
+                  "name": "databricks-del",
+                  "properties": {
+                    "serviceName": "Microsoft.Databricks/workspaces"
+                  }
+                }
+              ]
+            }
+        }
+    ],
+    "outputs": {}
+}

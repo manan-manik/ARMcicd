@@ -1,0 +1,41 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "serverName": {
+            "type": "string"
+        },
+        "location": {
+            "type": "string"
+        },
+        "Database": {
+            "type": "Array",
+            "defaultValue" : [
+                {
+                    "databaseName" : "database",
+                    "databaseCondition" : true,
+                    "databaseTags" : {
+                        "Environment" : "Dev",
+                        "Owner"       : "Jake"
+                    }
+                }
+            ]
+        }
+    },
+    "resources": [
+      {
+        "type"      : "Microsoft.Sql/servers/databases",
+        "apiVersion": "2021-08-01-preview",
+        "copy"      : 
+        {
+            "name"     : "DB",
+            "count"    : "[length(parameters('Database'))]",
+            "mode"     : "Serial"
+        },
+        "condition" : "[parameters('Database')[copyIndex('DB')].databaseCondition]",
+        "name"      : "[format('{0}/{1}', parameters('serverName'), parameters('Database')[copyIndex('DB')].databaseName)]",
+        "location"  : "[parameters('location')]",
+        "tags"      : "[parameters('Database')[copyIndex('DB')].databaseTags]"
+      }
+    ]
+  }

@@ -10,14 +10,11 @@
                     "aspName"    : "ASPlinwebapp",
                     "webappcondition" : true,
                     "webappSKU" : "F1",
-                    "webapplinuxFxVersion" : "DOTNETCORE|3.0"
+                    "webapplinuxFxVersion" : "DOTNETCORE|3.0",
+                    "webappLanguage" : ""
                 }
             ]
         },
-        "winwebApp": {
-        "type": "Array",
-        "defaultValue" : []
-      },
         "location": {
             "type": "string",
             "defaultValue" : "eastus"

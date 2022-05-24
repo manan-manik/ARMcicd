@@ -10,13 +10,10 @@
                 "aspName"    : "ASPwinwebapp",
                 "webappcondition" : true,
                 "webappSKU" : "F1",
-                "webappLanguage" : ".net"
+                "webappLanguage" : ".net",
+                "webapplinuxFxVersion" : ""
             }
         ]
-      },
-      "linwebApp": {
-        "type": "Array",
-        "defaultValue" : []
       },
       "location": {
         "type": "string",

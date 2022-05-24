@@ -1,0 +1,46 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "Location": {
+            "type": "string"
+        },
+        "Storage" : {
+            "type" : "array",
+            "defaultValue" : [
+                {
+                    "storageName"       : "mananstorageacc",
+                    "storageCondition"  : true,
+                    "location"          : "eastus",
+                    "storageTags"       : {
+                            "Environment": "Dev",
+                            "Owner"      : "Jake"
+                    },
+                    "storageSKU"        : "Standard_LRS"   
+                }
+            ]
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type"      : "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2021-08-01",
+            "copy"      : 
+            {
+                "name"      : "Storage",
+                "count"     : "[length(parameters('Storage'))]",
+                "mode"      : "Serial"
+            },
+            "condition" : "[parameters('Storage')[copyIndex('Storage')].storageCondition]",
+            "name"      : "[parameters('Storage')[copyIndex('Storage')].storageName]",
+            "location"  : "[parameters('Storage')[copyIndex('Storage')].location]",
+            "tags"      : "[parameters('Storage')[copyIndex('Storage')].storageTags]",
+            "kind"      : "StorageV2",
+            "sku": 
+            {
+                "name": "[parameters('Storage')[copyIndex('Storage')].storageSKU]"
+            }
+        }
+    ]
+}

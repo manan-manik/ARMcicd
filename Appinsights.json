@@ -1,0 +1,47 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "Location": {
+            "type": "string"
+        },
+        "Insights" : {
+            "type" : "array",
+            "defaultValue" : [
+                {
+                    "insightsName"      : "insightsmanan",
+                    "insightsTags" : {
+                        "Environment": "Dev",
+                        "Owner"      : "Jake"
+                    },
+                    "insightsCondition" : true,
+                    "insightsKind"      : "web",
+                    "insightsAppType"   : "web"
+                }
+            ]
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type"      : "microsoft.insights/components",
+            "apiVersion": "2020-02-02",
+            "copy"      : 
+            {
+             "name"     : "Insights",
+             "count"    : "[length(parameters('Insights'))]",
+             "mode"     : "Serial"
+            },
+            "condition" : "[parameters('Insights')[copyIndex('Insights')].insightsCondition]",
+            "name"      : "[parameters('Insights')[copyIndex('Insights')].insightsName]",
+            "location"  : "[parameters('Location')]",
+            "kind"      : "[parameters('Insights')[copyIndex('Insights')].insightsKind]",
+            "tags"      : "[parameters('Insights')[copyIndex('Insights')].insightsTags]",
+            "properties": 
+            {
+                "Application_Type" : "[parameters('Insights')[copyIndex('Insights')].insightsAppType]",
+                "ApplicationId"    : "[parameters('Insights')[copyIndex('Insights')].insightsName]"
+            }
+        }
+    ]
+}

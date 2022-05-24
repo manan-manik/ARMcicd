@@ -1,0 +1,49 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "Location": {
+            "type": "string"
+        },
+        "servicePlan" : {
+            "type" : "array",
+            "defaultValue" : [
+                {
+                    "servicePlanName" : "serviceplanmanan",
+                    "servicePlanTags" : {
+                        "Environment" : "Dev",
+                        "Owner"       : "Jake"
+                    },
+                    "servicePlanCondition" : true,
+                    "servicePlanSKUName"   : "S1",
+                    "servicePlanSKUTier"   : "Standard",
+                    "servicePlanSKUSize"   : "S1"
+                }
+            ]
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type"      : "Microsoft.Web/serverfarms",
+            "apiVersion": "2021-03-01",
+            "copy"      : 
+            {
+                "name"     : "Serviceplan",
+                "count"    : "[length(parameters('servicePlan'))]",
+                "mode"     : "Serial"
+            },
+            "condition" : "[parameters('servicePlan')[copyIndex('Serviceplan')].servicePlanCondition]",
+            "name"      : "[parameters('servicePlan')[copyIndex('Serviceplan')].servicePlanName]",
+            "location"  : "[parameters('Location')]",
+            "tags"      : "[parameters('servicePlan')[copyIndex('Serviceplan')].servicePlanTags]",
+            "sku"       : 
+            {
+                "name"    : "[parameters('servicePlan')[copyIndex('Serviceplan')].servicePlanSKUName]",
+                "tier"    : "[parameters('servicePlan')[copyIndex('Serviceplan')].servicePlanSKUTier]",
+                "size"    : "[parameters('servicePlan')[copyIndex('Serviceplan')].servicePlanSKUSize]"
+            },
+            "properties":{}
+        }
+    ]
+}

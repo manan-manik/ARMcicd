@@ -1,0 +1,76 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "linwebApp": {
+            "type": "Array",
+            "defaultValue" : [
+                {
+                    "webappName" : "newwebmanan",
+                    "aspName"    : "ASPlinwebapp",
+                    "webappcondition" : true,
+                    "webappSKU" : "F1",
+                    "webapplinuxFxVersion" : "DOTNETCORE|3.0"
+                }
+            ]
+        },
+        "location": {
+            "type": "string",
+            "defaultValue" : "eastus"
+        }
+    },
+    "variables": {},
+    "resources": [
+      {
+          "type": "Microsoft.Web/serverfarms",
+          "apiVersion": "2021-02-01",
+          "copy": 
+          {
+              "name"  : "ASP",
+              "count" : "[length(parameters('linwebApp'))]",
+              "mode"  : "Serial"
+          },
+          "condition" : "[parameters('linwebApp')[copyIndex('ASP')].webappcondition]",
+          "name"      : "[parameters('linwebApp')[copyIndex('ASP')].aspName]",
+          "location"  : "[parameters('location')]",
+          "sku": 
+          {
+              "name": "[parameters('linwebApp')[copyIndex('ASP')].webappSKU]"
+          },
+            "kind": "linux",
+            "properties": {
+                "reserved": true
+            }
+      },
+      {
+          "type"       : "Microsoft.Web/sites",
+          "apiVersion" : "2021-02-01",
+          "copy": 
+          {
+              "name"  : "webapp",
+              "count" : "[length(parameters('linwebApp'))]",
+              "mode"  : "Serial"
+          },
+          "condition"  : "[parameters('linwebApp')[copyIndex('webapp')].webappcondition]",
+          "name"       : "[parameters('linwebApp')[copyIndex('webapp')].webAppName]",
+          "location"   : "[parameters('location')]",
+          "properties" : 
+          {
+            "httpsOnly": true,
+            "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('linwebApp')[copyIndex('webapp')].aspName)]",
+            "siteConfig": 
+            {
+              "linuxFxVersion": "[parameters('linwebApp')[copyIndex('webapp')].webapplinuxFxVersion]",
+              "minTlsVersion": "1.2",
+              "ftpsState": "FtpsOnly"
+            }
+          },
+          "identity": {
+            "type": "SystemAssigned"
+          },
+          "dependsOn": [
+            "[resourceId('Microsoft.Web/serverfarms', parameters('linwebApp')[copyIndex('webapp')].aspName)]"
+          ]
+      }
+    ]
+  }

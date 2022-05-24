@@ -1,0 +1,86 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "winwebApp": {
+        "type": "Array",
+        "defaultValue" : [
+            {
+                "webappName" : "newwebmanan",
+                "aspName"    : "ASPwinwebapp",
+                "webappcondition" : true,
+                "webappSKU" : "F1",
+                "webappLanguage" : ".net"
+            }
+        ]
+      },
+      "location": {
+        "type": "string",
+        "defaultValue" : "eastus"
+      }
+    },
+    "variables": {
+      "configReference": {
+        ".net": {
+          "comments": ".Net app. No additional configuration needed."
+        },
+        "html": {
+          "comments": "HTML app. No additional configuration needed."
+        },
+        "php": {
+          "phpVersion": "7.4"
+        },
+        "node": {
+          "appSettings": [
+            {
+              "name": "WEBSITE_NODE_DEFAULT_VERSION",
+              "value": "12.15.0"
+            }
+          ]
+        }
+      }
+    },
+    "resources": [
+      {
+        "type"      : "Microsoft.Web/serverfarms",
+        "apiVersion": "2021-03-01",
+        "copy": 
+        {
+            "name"  : "ASP",
+            "count" : "[length(parameters('winwebApp'))]",
+            "mode"  : "Serial"
+        },
+        "condition" : "[parameters('winwebApp')[copyIndex('ASP')].webappcondition]",
+        "name"      : "[parameters('winwebApp')[copyIndex('ASP')].aspName]",
+        "location"  : "[parameters('location')]",
+        "sku": {
+          "name": "[parameters('winwebApp')[copyIndex('ASP')].webappSKU]"
+        },
+        "properties": {}
+      },
+      {
+        "type": "Microsoft.Web/sites",
+        "apiVersion": "2021-03-01",
+        "copy": 
+        {
+            "name"  : "webapp",
+            "count" : "[length(parameters('winwebApp'))]",
+            "mode"  : "Serial"
+        },
+        "condition" : "[parameters('winwebApp')[copyIndex('webapp')].webappcondition]",
+        "name"      : "[parameters('winwebApp')[copyIndex('webapp')].webAppName]",
+        "location"  : "[parameters('location')]",
+        "identity"  : {
+          "type": "SystemAssigned"
+        },
+        "properties": {
+          "siteConfig": "[union(variables('configReference')[parameters('winwebApp')[copyIndex('webapp')].webappLanguage], createObject('minTlsVersion', '1.2', 'scmMinTlsVersion', '1.2', 'ftpsState', 'FtpsOnly'))]",
+          "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('winwebApp')[copyIndex('webapp')].aspName)]",
+          "httpsOnly": true
+        },
+        "dependsOn": [
+          "[resourceId('Microsoft.Web/serverfarms', parameters('winwebApp')[copyIndex('webapp')].aspName)]"
+        ]
+      }
+    ]
+  }

@@ -14,31 +14,7 @@
                             "subnetCondition"    : true,
                             "subnetAddressPrefix": "10.0.0.0/24",
                             "firewall"           : [],
-                            "virtualmachine"     : [
-                                {
-                                    "nicTags": {
-                                        "Environment": "Dev",
-                                        "Owner"      : "Jake"
-                                    },
-                                    "privateIPallocation" : "Dynamic",
-                                    "vmName"         : "VM01",
-                                    "vmCondition" : true,
-                                    "vmTags": {
-                                        "Environment": "Dev",
-                                        "Owner"      : "Jake"
-                                    },
-                                    "vmComputerName" : "VM01",
-                                    "vmlocation"     : "eastus",
-                                    "vmusername"     : "mananmanik",
-                                    "vmPassword"     : "Qwerty@12345",
-                                    "vmSize"         : "Standard_B1s",
-                                    "vmPublisher"    : "Canonical",
-                                    "vmOffer"        : "UbuntuServer",
-                                    "vmSku"          : "16.04-LTS",
-                                    "vmVersion"      : "latest",
-                                    "vmCreateOption" : "FromImage"  
-                                }
-                            ]
+                            "virtualmachine"     : []
                         }
             ]
         }

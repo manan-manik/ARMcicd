@@ -10,12 +10,12 @@
             "type": "array",
             "defaultValue": [
                 {
-                            "subnetName"         : "Subnet1",
-                            "subnetCondition"    : true,
-                            "subnetAddressPrefix": "10.0.0.0/24",
-                            "firewall"           : [],
-                            "virtualmachine"     : []
-                        }
+                    "subnetName"         : "Subnet1",
+                    "subnetCondition"    : true,
+                    "subnetAddressPrefix": "10.0.0.0/24",
+                    "firewall"           : [],
+                    "virtualmachine"     : []
+                }
             ]
         }
     },
@@ -40,6 +40,7 @@
         {
             "type"      : "Microsoft.Resources/deployments",
             "apiVersion": "2021-04-01",
+            "condition" : "[equals(parameters('Subnets')[copyIndex('VM')].firewall, json('null'))]",
             "copy"       : 
             {
                 "name"      : "VM",
@@ -75,13 +76,15 @@
         {
             "type"      : "Microsoft.Resources/deployments",
             "apiVersion": "2021-04-01",
+
             "copy"       : 
             {
                 "name"      : "Firewall",
                 "count"     : "[length(parameters('Subnets'))]",
                 "mode"      : "Serial"
             },
-            "name"      : "[concat(parameters('Subnets')[copyIndex('Firewall')].subnetName, '-firewall')]",
+            "name"      : "[parameters('Subnets')[copyIndex('Firewall')].subnetName]",
+            "condition"  : "[equals(parameters('Subnets')[copyIndex('Firewall')].virtualmachine, json('null'))]",
             "dependsOn": [
                 "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('VNet_Name'), parameters('Subnets')[copyIndex('Firewall')].subnetName)]"
             ],

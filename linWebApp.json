@@ -37,7 +37,7 @@
           },
           "condition" : "[parameters('linwebApp')[copyIndex('ASP')].webappcondition]",
           "name"      : "[parameters('linwebApp')[copyIndex('ASP')].aspName]",
-          "tags"      : "[parameters('linwebApp')[copyIndex('webapp')].webAppTags]",
+          "tags"      : "[parameters('linwebApp')[copyIndex('ASP')].webAppTags]",
           "location"  : "[parameters('location')]",
           "sku": 
           {

@@ -8,6 +8,10 @@
                 {
                     "webappName" : "newwebmanan",
                     "aspName"    : "ASPlinwebapp",
+                    "webAppTags": {
+                        "Environment": "Dev",
+                        "Owner"      : "Jake"
+                      },
                     "webappcondition" : true,
                     "webappSKU" : "F1",
                     "webapplinuxFxVersion" : "DOTNETCORE|3.0",
@@ -33,6 +37,7 @@
           },
           "condition" : "[parameters('linwebApp')[copyIndex('ASP')].webappcondition]",
           "name"      : "[parameters('linwebApp')[copyIndex('ASP')].aspName]",
+          "tags"      : "[parameters('linwebApp')[copyIndex('webapp')].webAppTags]",
           "location"  : "[parameters('location')]",
           "sku": 
           {
@@ -54,6 +59,7 @@
           },
           "condition"  : "[parameters('linwebApp')[copyIndex('webapp')].webappcondition]",
           "name"       : "[parameters('linwebApp')[copyIndex('webapp')].webAppName]",
+          "tags"       : "[parameters('linwebApp')[copyIndex('webapp')].webAppTags]",
           "location"   : "[parameters('location')]",
           "properties" : 
           {
